@@ -23,11 +23,19 @@ public class GameInput : MonoBehaviour
 
     private PlayerInputActions playerInputActions;
 
+    private const string PLAYER_PREFS_BINDINGS = "InputBindings";
+
     private void Awake()
     {
         Instance = this;
 
         playerInputActions = new PlayerInputActions();
+
+        if (PlayerPrefs.HasKey(PLAYER_PREFS_BINDINGS))
+        {
+            playerInputActions.LoadBindingOverridesFromJson(PlayerPrefs.GetString(PLAYER_PREFS_BINDINGS));
+        }
+
         playerInputActions.Player.Enable();
 
         playerInputActions.Player.Interact.performed += Interact_performed;
@@ -62,7 +70,10 @@ public class GameInput : MonoBehaviour
     public Vector2 GetMovementVectorNormalized()
     {
         Vector2 inputVector = playerInputActions.Player.Move.ReadValue<Vector2>();
-        return inputVector.normalized;
+
+        inputVector = inputVector.normalized;
+
+        return inputVector;
     }
 
     public string GetBindingText(Binding binding)
@@ -97,11 +108,12 @@ public class GameInput : MonoBehaviour
     {
         playerInputActions.Player.Disable();
 
-        InputAction inputAction = null;
-        int bindingIndex = 0;
+        InputAction inputAction;
+        int bindingIndex;
 
         switch (binding)
         {
+            default:
             case Binding.Move_Up:
                 inputAction = playerInputActions.Player.Move;
                 bindingIndex = 1;
@@ -143,6 +155,8 @@ public class GameInput : MonoBehaviour
             {
                 callback.Dispose();
                 playerInputActions.Player.Enable();
+                PlayerPrefs.SetString(PLAYER_PREFS_BINDINGS,
+                    playerInputActions.SaveBindingOverridesAsJson());
                 onActionRebound();
             })
             .Start();
