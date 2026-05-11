@@ -7,78 +7,109 @@ public class OptionsUI : MonoBehaviour
 {
     public static OptionsUI Instance { get; private set; }
 
+    [Header("Buttons")]
     [SerializeField] private Button soundEffectsButton;
     [SerializeField] private Button musicButton;
     [SerializeField] private Button closeButton;
+
     [SerializeField] private Button moveUpButton;
     [SerializeField] private Button moveDownButton;
     [SerializeField] private Button moveRightButton;
     [SerializeField] private Button moveLeftButton;
+
     [SerializeField] private Button interactButton;
     [SerializeField] private Button interactAlternateButton;
     [SerializeField] private Button pauseButton;
 
+    [SerializeField] private Button gamepadInteractButton;
+    [SerializeField] private Button gamepadInteractAlternateButton;
+    [SerializeField] private Button gamepadPauseButton;
+
+    [Header("Texts")]
     [SerializeField] private TextMeshProUGUI soundEffectsText;
     [SerializeField] private TextMeshProUGUI musicText;
+
     [SerializeField] private TextMeshProUGUI moveUpText;
     [SerializeField] private TextMeshProUGUI moveDownText;
     [SerializeField] private TextMeshProUGUI moveRightText;
     [SerializeField] private TextMeshProUGUI moveLeftText;
+
     [SerializeField] private TextMeshProUGUI interactText;
     [SerializeField] private TextMeshProUGUI interactAlternateText;
     [SerializeField] private TextMeshProUGUI pauseText;
+
+    [SerializeField] private TextMeshProUGUI gamepadInteractText;
+    [SerializeField] private TextMeshProUGUI gamepadInteractAlternateText;
+    [SerializeField] private TextMeshProUGUI gamepadPauseText;
+
+    [Header("Other")]
     [SerializeField] private Transform pressToRebindKeyTransform;
 
     private void Awake()
     {
         Instance = this;
 
-        soundEffectsButton.onClick.AddListener(() => {
+        AddButtonListener(soundEffectsButton, () => {
             SoundManager.Instance.ChangeVolume();
             UpdateVisual();
         });
 
-        musicButton.onClick.AddListener(() => {
+        AddButtonListener(musicButton, () => {
             MusicManager.Instance.ChangeVolume();
             UpdateVisual();
         });
 
-        closeButton.onClick.AddListener(() => {
+        AddButtonListener(closeButton, () => {
             Hide();
         });
 
-        moveUpButton.onClick.AddListener(() => {
+        AddButtonListener(moveUpButton, () => {
             RebindBinding(GameInput.Binding.Move_Up);
         });
 
-        moveDownButton.onClick.AddListener(() => {
+        AddButtonListener(moveDownButton, () => {
             RebindBinding(GameInput.Binding.Move_Down);
         });
 
-        moveLeftButton.onClick.AddListener(() => {
+        AddButtonListener(moveLeftButton, () => {
             RebindBinding(GameInput.Binding.Move_Left);
         });
 
-        moveRightButton.onClick.AddListener(() => {
+        AddButtonListener(moveRightButton, () => {
             RebindBinding(GameInput.Binding.Move_Right);
         });
 
-        interactButton.onClick.AddListener(() => {
+        AddButtonListener(interactButton, () => {
             RebindBinding(GameInput.Binding.Interact);
         });
 
-        interactAlternateButton.onClick.AddListener(() => {
+        AddButtonListener(interactAlternateButton, () => {
             RebindBinding(GameInput.Binding.InteractAlternate);
         });
 
-        pauseButton.onClick.AddListener(() => {
+        AddButtonListener(pauseButton, () => {
             RebindBinding(GameInput.Binding.Pause);
+        });
+
+        AddButtonListener(gamepadInteractButton, () => {
+            RebindBinding(GameInput.Binding.Gamepad_Interact);
+        });
+
+        AddButtonListener(gamepadInteractAlternateButton, () => {
+            RebindBinding(GameInput.Binding.Gamepad_InteractAlternate);
+        });
+
+        AddButtonListener(gamepadPauseButton, () => {
+            RebindBinding(GameInput.Binding.Gamepad_Pause);
         });
     }
 
     private void Start()
     {
-        KitchenGameManager.Instance.OnGameUnpaused += KitchenGameManager_OnGameUnpaused;
+        if (KitchenGameManager.Instance != null)
+        {
+            KitchenGameManager.Instance.OnGameUnpaused += KitchenGameManager_OnGameUnpaused;
+        }
 
         UpdateVisual();
         HidePressToRebindKey();
@@ -92,21 +123,48 @@ public class OptionsUI : MonoBehaviour
 
     private void UpdateVisual()
     {
-        soundEffectsText.text = "Sound Effects: " + Mathf.Round(SoundManager.Instance.GetVolume() * 10f);
-        musicText.text = "Music: " + Mathf.Round(MusicManager.Instance.GetVolume() * 10f);
+        if (soundEffectsText != null)
+            soundEffectsText.text = "Sound Effects: " + Mathf.Round(SoundManager.Instance.GetVolume() * 10f);
 
-        moveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Up);
-        moveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Down);
-        moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Left);
-        moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Right);
-        interactText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
-        interactAlternateText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlternate);
-        pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
+        if (musicText != null)
+            musicText.text = "Music: " + Mathf.Round(MusicManager.Instance.GetVolume() * 10f);
+
+        if (moveUpText != null)
+            moveUpText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Up);
+
+        if (moveDownText != null)
+            moveDownText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Down);
+
+        if (moveLeftText != null)
+            moveLeftText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Left);
+
+        if (moveRightText != null)
+            moveRightText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Move_Right);
+
+        if (interactText != null)
+            interactText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Interact);
+
+        if (interactAlternateText != null)
+            interactAlternateText.text = GameInput.Instance.GetBindingText(GameInput.Binding.InteractAlternate);
+
+        if (pauseText != null)
+            pauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Pause);
+
+        if (gamepadInteractText != null)
+            gamepadInteractText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Interact);
+
+        if (gamepadInteractAlternateText != null)
+            gamepadInteractAlternateText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_InteractAlternate);
+
+        if (gamepadPauseText != null)
+            gamepadPauseText.text = GameInput.Instance.GetBindingText(GameInput.Binding.Gamepad_Pause);
     }
 
     public void Show()
     {
         gameObject.SetActive(true);
+
+        soundEffectsButton.Select();
     }
 
     private void Hide()
@@ -116,12 +174,18 @@ public class OptionsUI : MonoBehaviour
 
     private void ShowPressToRebindKey()
     {
-        pressToRebindKeyTransform.gameObject.SetActive(true);
+        if (pressToRebindKeyTransform != null)
+        {
+            pressToRebindKeyTransform.gameObject.SetActive(true);
+        }
     }
 
     private void HidePressToRebindKey()
     {
-        pressToRebindKeyTransform.gameObject.SetActive(false);
+        if (pressToRebindKeyTransform != null)
+        {
+            pressToRebindKeyTransform.gameObject.SetActive(false);
+        }
     }
 
     private void RebindBinding(GameInput.Binding binding)
@@ -132,5 +196,17 @@ public class OptionsUI : MonoBehaviour
             HidePressToRebindKey();
             UpdateVisual();
         });
+    }
+
+    private void AddButtonListener(Button button, Action action)
+    {
+        if (button != null)
+        {
+            button.onClick.AddListener(() => action());
+        }
+        else
+        {
+            Debug.LogWarning("Ada Button yang belum di-assign di Inspector!", this);
+        }
     }
 }
