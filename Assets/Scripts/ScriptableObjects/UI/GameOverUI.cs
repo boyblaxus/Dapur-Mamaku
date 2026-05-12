@@ -14,12 +14,10 @@ public class GameOverUI : MonoBehaviour
     {
         KitchenGameManager.Instance.OnStateChanged += KitchenGameManager_OnStateChanged;
 
-        backToMenuButton.onClick.AddListener(() =>
-        {
-            Time.timeScale = 1f;
-            SceneManager.LoadScene("MainMenu"); // ← Sesuaikan nama scene-mu
+        backToMenuButton.onClick.AddListener(() => {
+            Loader.Load(Loader.Scene.MainMenuScene);
         });
-
+        
         Hide();
     }
 
