@@ -1,23 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Media;
 using UnityEngine;
 
 public class SoundManager : MonoBehaviour
 {
-
-
     private const string PLAYER_PREFS_SOUND_EFFECT_VOLUME = "SoundEffectsVolume";
     public static SoundManager Instance { get; private set; }
 
     [SerializeField] private AudioClipRefsSO audioClipRefsSO;
-
     private float volume = 1f;
 
     private void Awake()
     {
         Instance = this;
-
         volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECT_VOLUME, 1f);
     }
 
@@ -28,10 +23,10 @@ public class SoundManager : MonoBehaviour
         CuttingCounter.OnAnyCut += CuttingCounter_OnAnyCut;
         Player.Instance.OnPickedSomething += Player_OnPickedSomething;
         BaseCounter.OnAnyObjectPlacedHere += BaseCounter_OnAnyObjectPlacedHere;
-        TrashCounter.OnAnyObjectTrashed += TrashCounter_OnAnyObjectTrashed; // BARU
+        TrashCounter.OnAnyObjectTrashed += TrashCounter_OnAnyObjectTrashed;
     }
 
-    private void TrashCounter_OnAnyObjectTrashed(object sender, System.EventArgs e) // BARU
+    private void TrashCounter_OnAnyObjectTrashed(object sender, System.EventArgs e)
     {
         TrashCounter trashCounter = sender as TrashCounter;
         PlaySound(audioClipRefsSO.trash, trashCounter.transform.position);
@@ -75,20 +70,29 @@ public class SoundManager : MonoBehaviour
     {
         AudioSource.PlayClipAtPoint(audioClip, position, volumeMultiplier * volume);
     }
-    
+
     public void PlayFootstepsSound(Vector3 position, float volume)
     {
         PlaySound(audioClipRefsSO.footstep, position, volume);
     }
 
+    public void PlayCountdownSound()
+    {
+        PlaySound(audioClipRefsSO.warning, Vector3.zero);
+    }
+
+    public void PlayWarningSound(Vector3 position) // ← fix: Vector3
+    {
+        PlaySound(audioClipRefsSO.warning, position); // ← fix: tambah ) dan ;
+    }
+
     public void ChangeVolume()
     {
         volume += .1f;
-        if ( volume > 1f)
+        if (volume > 1f)
         {
             volume = 0f;
         }
-
         PlayerPrefs.SetFloat(PLAYER_PREFS_SOUND_EFFECT_VOLUME, volume);
         PlayerPrefs.Save();
     }
@@ -97,5 +101,4 @@ public class SoundManager : MonoBehaviour
     {
         return volume;
     }
-
 }
