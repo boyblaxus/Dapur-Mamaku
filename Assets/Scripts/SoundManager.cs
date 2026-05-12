@@ -8,12 +8,12 @@ public class SoundManager : MonoBehaviour
     public static SoundManager Instance { get; private set; }
 
     [SerializeField] private AudioClipRefsSO audioClipRefsSO;
-    private float volume = 1f;
+    private float volume = 100f;
 
     private void Awake()
     {
         Instance = this;
-        volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECT_VOLUME, 1f);
+        volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECT_VOLUME, 100f);
     }
 
     private void Start()
@@ -88,8 +88,8 @@ public class SoundManager : MonoBehaviour
 
     public void ChangeVolume()
     {
-        volume += .1f;
-        if (volume > 1f)
+        volume += 10f;
+        if (volume > 100f)
         {
             volume = 0f;
         }

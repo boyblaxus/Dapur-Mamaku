@@ -6,6 +6,7 @@ using UnityEngine;
 public class KitchenGameManager : MonoBehaviour
 {
     public static KitchenGameManager Instance { get; private set; }
+
     public event EventHandler OnStateChanged;
     public event EventHandler OnGamePaused;
     public event EventHandler OnGameUnpaused;
@@ -21,8 +22,10 @@ public class KitchenGameManager : MonoBehaviour
     private State state;
     private float countdownToStartTimer = 3f;
     private float gamePlayingTimer;
-    private float gamePlayingTimerMax = 30f; // ← diubah dari 10f ke 30f
+    private float gamePlayingTimerMax = 60f;
     private bool isGamePaused = false;
+
+    [SerializeField] private float bonusTimeOnDelivery = 10f; // ← Bisa diatur di Inspector
 
     private void Awake()
     {
@@ -56,6 +59,7 @@ public class KitchenGameManager : MonoBehaviour
         {
             case State.WaitingToStart:
                 break;
+
             case State.CountdownToStart:
                 countdownToStartTimer -= Time.deltaTime;
                 if (countdownToStartTimer < 0f)
@@ -65,6 +69,7 @@ public class KitchenGameManager : MonoBehaviour
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
                 }
                 break;
+
             case State.GamePlaying:
                 gamePlayingTimer -= Time.deltaTime;
                 if (gamePlayingTimer < 0f)
@@ -73,9 +78,11 @@ public class KitchenGameManager : MonoBehaviour
                     OnStateChanged?.Invoke(this, EventArgs.Empty);
                 }
                 break;
+
             case State.GameOver:
                 break;
         }
+
         Debug.Log(state);
     }
 
@@ -102,6 +109,12 @@ public class KitchenGameManager : MonoBehaviour
     public float GetGamePlayingTimerNormalized()
     {
         return 1 - (gamePlayingTimer / gamePlayingTimerMax);
+    }
+
+    // ← METHOD BARU: dipanggil saat delivery sukses
+    public void AddBonusTime(float bonusTime)
+    {
+        gamePlayingTimer = Mathf.Min(gamePlayingTimer + bonusTime, gamePlayingTimerMax);
     }
 
     public void TogglePauseGame()

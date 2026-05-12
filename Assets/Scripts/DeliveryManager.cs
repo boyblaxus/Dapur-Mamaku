@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,7 +15,6 @@ public class DeliveryManager : MonoBehaviour
     [SerializeField] private RecipeListSO recipeListSO;
 
     private List<RecipeSO> waitingRecipeSOList;
-
     private float spawnRecipeTimer;
     private float spawnRecipeTimerMax = 4f;
     private int waitingRecipeMax = 4;
@@ -30,21 +29,18 @@ public class DeliveryManager : MonoBehaviour
     private void Update()
     {
         spawnRecipeTimer -= Time.deltaTime;
-
         if (spawnRecipeTimer <= 0f)
         {
             spawnRecipeTimer = spawnRecipeTimerMax;
-
             if (KitchenGameManager.Instance.IsGamePlaying() && waitingRecipeSOList.Count < waitingRecipeMax)
             {
                 RecipeSO waitingRecipeSO =
                     recipeListSO.recipeSOList[
                         UnityEngine.Random.Range(0, recipeListSO.recipeSOList.Count)
                     ];
-                Debug.Log(waitingRecipeSO.recipeName); // TODO: Visual feedback
 
+                Debug.Log(waitingRecipeSO.recipeName);
                 waitingRecipeSOList.Add(waitingRecipeSO);
-
                 OnRecipeSpawned?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -64,7 +60,6 @@ public class DeliveryManager : MonoBehaviour
                 foreach (KitchenObjectSO recipeKitchenObjectSO in waitingRecipeSO.kitchenObjectSOList)
                 {
                     bool ingredientFound = false;
-
                     foreach (KitchenObjectSO plateKitchenObjectSO in plateKitchenObject.GetKitchenObjectSOList())
                     {
                         if (plateKitchenObjectSO == recipeKitchenObjectSO)
@@ -73,7 +68,6 @@ public class DeliveryManager : MonoBehaviour
                             break;
                         }
                     }
-
                     if (!ingredientFound)
                     {
                         plateContentsMatchesRecipe = false;
@@ -82,16 +76,19 @@ public class DeliveryManager : MonoBehaviour
 
                 if (plateContentsMatchesRecipe)
                 {
-
                     successfulRecipesAmount++;
                     waitingRecipeSOList.RemoveAt(i);
-
                     OnRecipeCompleted?.Invoke(this, EventArgs.Empty);
                     OnRecipeSuccess?.Invoke(this, EventArgs.Empty);
+
+                    // ← BONUS WAKTU SAAT DELIVERY SUKSES
+                    KitchenGameManager.Instance.AddBonusTime(10f);
+
                     return;
                 }
             }
         }
+
         OnRecipeFailed?.Invoke(this, EventArgs.Empty);
     }
 
@@ -99,6 +96,7 @@ public class DeliveryManager : MonoBehaviour
     {
         return waitingRecipeSOList;
     }
+
     public int GetSuccessfulRecipesAmount()
     {
         return successfulRecipesAmount;

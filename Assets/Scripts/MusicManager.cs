@@ -9,21 +9,21 @@ public class MusicManager : MonoBehaviour
     private const string PLAYER_PREFS_SOUND_EFFECT_VOLUME = "MusicVolume";
     public static MusicManager Instance { get; private set;}
     private AudioSource audioSource;
-    private float volume = .3f;
+    private float volume = 100f;
 
     private void Awake()
     {
         Instance = this;
         audioSource = GetComponent<AudioSource>();
 
-        volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECT_VOLUME, .3f);
+        volume = PlayerPrefs.GetFloat(PLAYER_PREFS_SOUND_EFFECT_VOLUME, 100f);
         audioSource.volume = volume;
     }
 
     public void ChangeVolume()
     {
-        volume += .1f;
-        if ( volume > 1f)
+        volume += 10f;
+        if ( volume > 100f)
         {
             volume = 0f;
         }
